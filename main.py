@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVR
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import MinMaxScaler
 import joblib
 import yaml
@@ -10,51 +10,44 @@ import yaml
 # Load your dataset
 data = pd.read_csv('parkinsons.csv')
 
-# Selecting relevant features based on the paper
-# Using the provided column names
+# Selecting only two relevant features and the target
 features = ['HNR', 'RPDE']
-output = 'PPE'
+output = 'status'  # Assuming 'status' is the categorical target for classification
 
 X = data[features]
 y = data[output]
 
-# Scaling the features to [-1, 1] as suggested in the paper
-scaler_X = MinMaxScaler(feature_range=(-1, 1))
-scaler_y = MinMaxScaler(feature_range=(-1, 1))
-X_scaled = scaler_X.fit_transform(X)
-y_scaled = scaler_y.fit_transform(y.values.reshape(-1, 1))
+# Scaling the features to [-1, 1]
+scaler = MinMaxScaler(feature_range=(-1, 1))
+X_scaled = scaler.fit_transform(X)
 
 # Splitting the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_scaled, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
-# Building the SVM regression model with a radial basis function (RBF) kernel
-svm_model = SVR(kernel='rbf', C=1.0, gamma='scale')
+# Building the SVM classification model with tuned parameters and balanced class weight
+svm_model = SVC(kernel='rbf', C=10.0, gamma=0.1, class_weight='balanced')  # Tuned parameters
 
 # Training the model
-svm_model.fit(X_train, y_train.ravel())
+svm_model.fit(X_train, y_train)
 
 # Making predictions
 y_pred = svm_model.predict(X_test)
 
-# Inverse transform the predictions and actual values for interpretability
-y_pred_original = scaler_y.inverse_transform(y_pred.reshape(-1, 1))
-y_test_original = scaler_y.inverse_transform(y_test)
-
 # Evaluating the model
-mse = mean_squared_error(y_test_original, y_pred_original)
-r2 = r2_score(y_test_original, y_pred_original)
-print(f"Mean Squared Error: {mse:.4f}")
-print(f"R-squared: {r2:.4f}")
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy * 100:.2f}%")
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
 
 # Save the trained model to a file
-model_filename = 'svm_model.joblib'
+model_filename = 'svc_model_2features.joblib'
 joblib.dump(svm_model, model_filename)
 print(f"Model saved as {model_filename}")
 
 # Create and save the config.yaml file
 config = {
     'features': features,
-    'path': model_filename
+    'path': "../" + model_filename  # Adjusted for relative path
 }
 
 with open('config.yaml', 'w') as config_file:

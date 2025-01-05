@@ -1,4 +1,4 @@
 features:
 - HNR
 - RPDE
-path: svm_model.joblib
+path: ../svc_model_2features.joblib
