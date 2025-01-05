@@ -1,4 +1,4 @@
-path: svm_model.joblib
-selected_features:
+features:
 - HNR
 - RPDE
+path: svm_model.joblib
