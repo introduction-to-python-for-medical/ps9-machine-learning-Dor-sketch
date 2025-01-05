@@ -1,4 +1,4 @@
 features:
-- HNR
+- PPE
 - DFA
 path: svc_model.joblib
