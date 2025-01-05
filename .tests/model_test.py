@@ -18,3 +18,5 @@ def test_model():
     prediction = model.predict(X)
     score = accuracy_score(y, prediction)
     assert score > 0.75
+
+print(test_model())

@@ -51,7 +51,7 @@ print(f"Model saved as {model_filename}")
 # Create and save the config.yaml file
 config = {
     'features': features,
-    'path': "../" + model_filename
+    'path': model_filename
 }
 
 with open('config.yaml', 'w') as config_file:
