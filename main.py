@@ -19,9 +19,10 @@ X = data[features]
 y = data[output]
 
 # Scaling the features to [-1, 1] as suggested in the paper
-scaler = MinMaxScaler(feature_range=(-1, 1))
-X_scaled = scaler.fit_transform(X)
-y_scaled = scaler.fit_transform(y.values.reshape(-1, 1))
+scaler_X = MinMaxScaler(feature_range=(-1, 1))
+scaler_y = MinMaxScaler(feature_range=(-1, 1))
+X_scaled = scaler_X.fit_transform(X)
+y_scaled = scaler_y.fit_transform(y.values.reshape(-1, 1))
 
 # Splitting the dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_scaled, test_size=0.2, random_state=42)
@@ -35,9 +36,13 @@ svm_model.fit(X_train, y_train.ravel())
 # Making predictions
 y_pred = svm_model.predict(X_test)
 
+# Inverse transform the predictions and actual values for interpretability
+y_pred_original = scaler_y.inverse_transform(y_pred.reshape(-1, 1))
+y_test_original = scaler_y.inverse_transform(y_test)
+
 # Evaluating the model
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test_original, y_pred_original)
+r2 = r2_score(y_test_original, y_pred_original)
 print(f"Mean Squared Error: {mse:.4f}")
 print(f"R-squared: {r2:.4f}")
 
