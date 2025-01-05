@@ -1,2 +1,4 @@
-path: "path_to_model.joblib
-features: ['feature_A', 'feature_B']
+path: svm_model.joblib
+selected_features:
+- HNR
+- RPDE
